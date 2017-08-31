@@ -1,0 +1,12 @@
+Source: ros-jade-novatel-gps-msgs
+Section: misc
+Priority: extra
+Maintainer: Ed Venator <evenator@swri.org>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin, ros-jade-message-generation, ros-jade-std-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-jade-novatel-gps-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jade-message-runtime, ros-jade-std-msgs
+Description: Messages for proprietary (non-NMEA) sentences from Novatel GPS receivers.
