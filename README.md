@@ -1,3 +1,28 @@
+## novatel_gps_driver (lunar) - 3.4.0-0
+
+The packages in the `novatel_gps_driver` repository were released into the `lunar` distro by running `/usr/bin/bloom-release -r lunar -t lunar novatel_gps_driver` on `Fri, 06 Oct 2017 15:46:30 -0000`
+
+These packages were released:
+- `novatel_gps_driver`
+- `novatel_gps_msgs`
+
+Version of package(s) in repository `novatel_gps_driver`:
+
+- upstream repository: https://github.com/swri-robotics/novatel_gps_driver.git
+- release repository: https://github.com/swri-robotics-gbp/novatel_gps_driver-release.git
+- rosdistro version: `3.3.0-0`
+- old version: `3.3.0-0`
+- new version: `3.4.0-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.26`
+- catkin_pkg version: `0.3.6`
+- rosdep version: `0.11.8`
+- rosdistro version: `0.6.2`
+- vcstools version: `0.1.39`
+
+
 ## novatel_gps_driver (kinetic) - 3.4.0-0
 
 The packages in the `novatel_gps_driver` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release -r kinetic -t kinetic novatel_gps_driver` on `Fri, 06 Oct 2017 15:43:05 -0000`
