@@ -1,0 +1,12 @@
+Source: ros-melodic-novatel-gps-msgs
+Section: misc
+Priority: extra
+Maintainer: Ed Venator <evenator@swri.org>
+Build-Depends: debhelper (>= 9.0.0), ros-melodic-catkin, ros-melodic-message-generation, ros-melodic-std-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-melodic-novatel-gps-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-melodic-message-runtime, ros-melodic-std-msgs
+Description: Messages for proprietary (non-NMEA) sentences from Novatel GPS receivers.
