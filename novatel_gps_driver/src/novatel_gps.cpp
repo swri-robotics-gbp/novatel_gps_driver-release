@@ -68,7 +68,9 @@ namespace novatel_gps_driver
       range_msgs_(MAX_BUFFER_SIZE),
       time_msgs_(MAX_BUFFER_SIZE),
       trackstat_msgs_(MAX_BUFFER_SIZE),
-      imu_rate_(-1.0)
+      imu_rate_(-1.0),
+      imu_rate_forced_(false),
+      apply_vehicle_body_rotation_(false)
   {
   }
 
@@ -171,6 +173,11 @@ namespace novatel_gps_driver
       }
     }
     is_connected_ = false;
+  }
+
+  void NovatelGps::ApplyVehicleBodyRotation(const bool& apply_rotation)
+  {
+    apply_vehicle_body_rotation_ = apply_rotation;
   }
 
   NovatelGps::ReadResult NovatelGps::ProcessData()
@@ -963,10 +970,14 @@ namespace novatel_gps_driver
     ROS_DEBUG("Created %lu new sensor_msgs/Imu messages.", new_size);
   }
 
-  void NovatelGps::SetImuRate(double imu_rate)
+  void NovatelGps::SetImuRate(double imu_rate, bool imu_rate_forced)
   {
     ROS_INFO("IMU sample rate: %f", imu_rate);
     imu_rate_ = imu_rate;
+    if (imu_rate_forced)
+    {
+      imu_rate_forced_ = true;
+    }
   }
 
   NovatelGps::ReadResult NovatelGps::ParseBinaryMessage(const BinaryMessage& msg,
@@ -1210,6 +1221,56 @@ namespace novatel_gps_driver
       trackstat->header.stamp = stamp;
       trackstat_msgs_.push_back(trackstat);
     }
+    else if (sentence.id == "RAWIMUXA")
+    {
+      static std::map<std::string, std::pair<double, std::string>> rates = {
+        { "0",  std::pair<double, std::string>(100, "Unknown") },
+        { "1",  std::pair<double, std::string>(100, "Honeywell HG1700 AG11") },
+        { "4",  std::pair<double, std::string>(100, "Honeywell HG1700 AG17") },
+        { "5",  std::pair<double, std::string>(100, "Honeywell HG1700 CA29") },
+        { "8",  std::pair<double, std::string>(200, "Litton LN-200 (200hz model)") },
+        { "11", std::pair<double, std::string>(100, "Honeywell HG1700 AG58") },
+        { "12", std::pair<double, std::string>(100, "Honeywell HG1700 AG62") },
+        { "13", std::pair<double, std::string>(200, "iMAR ilMU-FSAS") },
+        { "16", std::pair<double, std::string>(200, "KVH 1750 IMU") },
+        { "19", std::pair<double, std::string>(200, "Northrop Grumman Litef LCI-1") },
+        { "20", std::pair<double, std::string>(100, "Honeywell HG1930 AA99") },
+        { "26", std::pair<double, std::string>(100, "Northrop Grumman Litef ISA-100C") },
+        { "27", std::pair<double, std::string>(100, "Honeywell HG1900 CA50") },
+        { "28", std::pair<double, std::string>(100, "Honeywell HG1930 CA50") },
+        { "31", std::pair<double, std::string>(200, "Analog Devices ADIS16488") },
+        { "32", std::pair<double, std::string>(125, "Sensonor STIM300") },
+        { "33", std::pair<double, std::string>(200, "KVH1750 IMU") },
+        { "34", std::pair<double, std::string>(200, "Northrop Grumman Litef ISA-100") },
+        { "38", std::pair<double, std::string>(400, "Northrop Grumman Litef ISA-100 400Hz") },
+        { "39", std::pair<double, std::string>(400, "Northrop Grumman Litef ISA-100C 400Hz") },
+        { "41", std::pair<double, std::string>(125, "Epson G320N") },
+        { "45", std::pair<double, std::string>(200, "KVH 1725 IMU?") }, //(This was a guess based on the 1750
+                       // as the actual rate is not documented and the specs are similar)
+        { "52", std::pair<double, std::string>(200, "Litef microIMU") },
+        { "56", std::pair<double, std::string>(125, "Sensonor STIM300, Direct Connection") },
+       };
+      
+      // Parse out the IMU type then save it, we don't care about the rest (3rd field)
+      std::string id = sentence.body.size() > 1 ? sentence.body[1] : "";
+      if (rates.find(id) != rates.end())
+      {
+        double rate = rates[id].first;
+ 
+        ROS_INFO("IMU Type %s Found, Rate: %f Hz", rates[id].second.c_str(), (float)rate);
+        
+        // Set the rate only if it hasnt been forced already
+        if (imu_rate_forced_ == false)
+        {        
+          SetImuRate(rate, false); // Dont force set from here so it can be configured elsewhere
+        }
+      }
+      else
+      {
+        // Error because the imu type was unknown
+        ROS_ERROR("Unknown IMU Type Received: %s", id.c_str());
+      }
+    }
 
     return READ_SUCCESS;
   }
@@ -1267,14 +1328,25 @@ namespace novatel_gps_driver
   bool NovatelGps::Configure(NovatelMessageOpts const& opts)
   {
     bool configured = true;
-    configured = configured && Write("unlogall\n");
+    configured = configured && Write("unlogall\r\n");
+
+    if (apply_vehicle_body_rotation_)
+    {
+      configured = configured && Write("vehiclebodyrotation 0 0 90\r\n");
+      configured = configured && Write("applyvehiclebodyrotation\r\n");
+    }
+
     for(NovatelMessageOpts::const_iterator option = opts.begin(); option != opts.end(); ++option)
     {
       std::stringstream command;
       command << std::setprecision(3);
-      command << "log " << option->first << " ontime " << option->second << "\n";
+      command << "log " << option->first << " ontime " << option->second << "\r\n";
       configured = configured && Write(command.str());
     }
+
+    // Log the IMU data once to get the IMU type
+    configured = configured && Write("log rawimuxa\r\n");
+
     return configured;
   }
 }
