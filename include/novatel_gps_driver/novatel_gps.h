@@ -232,6 +232,13 @@ namespace novatel_gps_driver
       static ConnectionType ParseConnection(const std::string& connection);
 
       /**
+       * @brief Determines whether or not to apply a 90 degree counter-clockwise rotation about Z
+       * to the Novatel SPAN frame to match up with the ROS coordinate frame.
+       * @param apply_rotation A bool indicating whether or not to apply the rotation.
+       */
+      void ApplyVehicleBodyRotation(const bool& apply_rotation);
+
+      /**
        * @brief Processes any data that has been received from the device since the last time
        * this message was called.  May result in any number of messages being placed in the
        * individual message buffers.
@@ -242,8 +249,9 @@ namespace novatel_gps_driver
       /**
        * @brief Sets the IMU rate; necessary for producing sensor_msgs/Imu messages.
        * @param imu_rate The IMU rate in Hz.
+       * @param force If this value should be used instead of an autodetected one
        */
-      void SetImuRate(double imu_rate);
+      void SetImuRate(double imu_rate, bool force = true);
 
       /**
        * @brief Writes the given string of characters to a connected NovAtel device.
@@ -369,6 +377,7 @@ namespace novatel_gps_driver
       std::string error_msg_;
 
       bool is_connected_;
+      bool imu_rate_forced_;
 
       double utc_offset_;
 
@@ -439,6 +448,9 @@ namespace novatel_gps_driver
       novatel_gps_msgs::InsstdevPtr latest_insstdev_;
       novatel_gps_msgs::InscovPtr latest_inscov_;
       double imu_rate_;
+
+      // Additional Options
+      bool apply_vehicle_body_rotation_;
   };
 }
 
