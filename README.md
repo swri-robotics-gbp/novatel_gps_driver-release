@@ -1,3 +1,28 @@
+## novatel_gps_driver (indigo) - 3.5.0-0
+
+The packages in the `novatel_gps_driver` repository were released into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo novatel_gps_driver` on `Tue, 17 Jul 2018 13:55:15 -0000`
+
+These packages were released:
+- `novatel_gps_driver`
+- `novatel_gps_msgs`
+
+Version of package(s) in repository `novatel_gps_driver`:
+
+- upstream repository: https://github.com/swri-robotics/novatel_gps_driver.git
+- release repository: https://github.com/swri-robotics-gbp/novatel_gps_driver-release.git
+- rosdistro version: `3.4.0-0`
+- old version: `3.4.0-0`
+- new version: `3.5.0-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.6`
+- catkin_pkg version: `0.4.6`
+- rosdep version: `0.12.2`
+- rosdistro version: `0.6.8`
+- vcstools version: `0.1.40`
+
+
 ## novatel_gps_driver (melodic) - 3.4.0-0
 
 The packages in the `novatel_gps_driver` repository were released into the `melodic` distro by running `/usr/bin/bloom-release -r melodic -t melodic novatel_gps_driver` on `Wed, 30 May 2018 18:39:20 -0000`
