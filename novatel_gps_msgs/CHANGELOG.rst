@@ -2,6 +2,12 @@
 Changelog for package novatel_gps_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.0 (2018-10-09)
+------------------
+* Add NovatelUtmPosition message
+* Add Inspvax message (#27)
+* Contributors: Ellon Paiva Mendes, Sagnik Basu
+
 3.5.0 (2018-07-17)
 ------------------
 * Update documentation
