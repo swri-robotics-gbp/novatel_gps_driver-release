@@ -2,6 +2,9 @@
 Changelog for package novatel_gps_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.7.0 (2019-03-22)
+------------------
+
 3.6.0 (2018-10-09)
 ------------------
 * Add NovatelUtmPosition message
