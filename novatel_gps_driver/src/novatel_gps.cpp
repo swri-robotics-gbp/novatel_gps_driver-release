@@ -52,6 +52,7 @@ namespace novatel_gps_driver
       serial_baud_(115200),
       tcp_socket_(io_service_),
       pcap_(NULL),
+      clocksteering_msgs_(MAX_BUFFER_SIZE),
       corrimudata_msgs_(MAX_BUFFER_SIZE),
       gpgga_msgs_(MAX_BUFFER_SIZE),
       gpgga_sync_buffer_(SYNC_BUFFER_SIZE),
@@ -523,6 +524,13 @@ namespace novatel_gps_driver
     trackstat_msgs.resize(trackstat_msgs_.size());
     std::copy(trackstat_msgs_.begin(), trackstat_msgs_.end(), trackstat_msgs.begin());
     trackstat_msgs_.clear();
+  }
+
+  void NovatelGps::GetClockSteeringMessages(std::vector<novatel_gps_msgs::ClockSteeringPtr>& clocksteering_msgs)
+  {
+    clocksteering_msgs.resize(clocksteering_msgs_.size());
+    std::copy(clocksteering_msgs_.begin(), clocksteering_msgs_.end(), clocksteering_msgs.begin());
+    clocksteering_msgs_.clear();
   }
 
   bool NovatelGps::CreatePcapConnection(const std::string& device, NovatelMessageOpts const& opts)
@@ -1277,6 +1285,7 @@ namespace novatel_gps_driver
                        // as the actual rate is not documented and the specs are similar)
         { "52", std::pair<double, std::string>(200, "Litef microIMU") },
         { "56", std::pair<double, std::string>(125, "Sensonor STIM300, Direct Connection") },
+        { "58", std::pair<double, std::string>(200, "Honeywell HG4930 AN01") },
        };
       
       // Parse out the IMU type then save it, we don't care about the rest (3rd field)
@@ -1298,6 +1307,11 @@ namespace novatel_gps_driver
         // Error because the imu type was unknown
         ROS_ERROR("Unknown IMU Type Received: %s", id.c_str());
       }
+    }
+    else if (sentence.id == "CLOCKSTEERINGA")
+    {
+      novatel_gps_msgs::ClockSteeringPtr clocksteering = clocksteering_parser_.ParseAscii(sentence);
+      clocksteering_msgs_.push_back(clocksteering);
     }
 
     return READ_SUCCESS;
@@ -1356,7 +1370,7 @@ namespace novatel_gps_driver
   bool NovatelGps::Configure(NovatelMessageOpts const& opts)
   {
     bool configured = true;
-    configured = configured && Write("unlogall\r\n");
+    configured = configured && Write("unlogall THISPORT_ALL\r\n");
 
     if (apply_vehicle_body_rotation_)
     {
