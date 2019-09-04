@@ -58,13 +58,18 @@ namespace novatel_gps_driver
       gpgga_sync_buffer_(SYNC_BUFFER_SIZE),
       gpgsa_msgs_(MAX_BUFFER_SIZE),
       gpgsv_msgs_(MAX_BUFFER_SIZE),
+      gphdt_msgs_(MAX_BUFFER_SIZE),
       gprmc_msgs_(MAX_BUFFER_SIZE),
       gprmc_sync_buffer_(SYNC_BUFFER_SIZE),
       imu_msgs_(MAX_BUFFER_SIZE),
       inscov_msgs_(MAX_BUFFER_SIZE),
       inspva_msgs_(MAX_BUFFER_SIZE),
+      inspvax_msgs_(MAX_BUFFER_SIZE),
       insstdev_msgs_(MAX_BUFFER_SIZE),
+      heading2_msgs_(MAX_BUFFER_SIZE),
+      dual_antenna_heading_msgs_(MAX_BUFFER_SIZE),
       novatel_positions_(MAX_BUFFER_SIZE),
+      novatel_xyz_positions_(MAX_BUFFER_SIZE),
       novatel_utm_positions_(MAX_BUFFER_SIZE),
       novatel_velocities_(MAX_BUFFER_SIZE),
       position_sync_buffer_(SYNC_BUFFER_SIZE),
@@ -295,6 +300,13 @@ namespace novatel_gps_driver
     novatel_positions_.clear();
   }
 
+  void NovatelGps::GetNovatelXYZPositions(std::vector<novatel_gps_msgs::NovatelXYZPtr>& positions)
+  {
+    positions.clear();
+    positions.insert(positions.end(), novatel_xyz_positions_.begin(), novatel_xyz_positions_.end());
+    novatel_xyz_positions_.clear();
+  }
+
   void NovatelGps::GetNovatelUtmPositions(std::vector<novatel_gps_msgs::NovatelUtmPositionPtr>& utm_positions)
   {
     utm_positions.clear();
@@ -449,6 +461,18 @@ namespace novatel_gps_driver
     }  // while (gpgga and gprmc buffers contain messages)
   }
 
+  void  NovatelGps::GetNovatelHeading2Messages(std::vector<novatel_gps_msgs::NovatelHeading2Ptr>& headings) {
+    headings.clear();
+    headings.insert(headings.end(), heading2_msgs_.begin(), heading2_msgs_.end());
+    heading2_msgs_.clear();
+  }
+
+  void  NovatelGps::GetNovatelDualAntennaHeadingMessages(std::vector<novatel_gps_msgs::NovatelDualAntennaHeadingPtr>& headings) {
+    headings.clear();
+    headings.insert(headings.end(), dual_antenna_heading_msgs_.begin(), dual_antenna_heading_msgs_.end());
+    dual_antenna_heading_msgs_.clear();
+  }
+
   void NovatelGps::GetNovatelCorrectedImuData(std::vector<novatel_gps_msgs::NovatelCorrectedImuDataPtr>& imu_messages)
   {
     imu_messages.clear();
@@ -477,6 +501,13 @@ namespace novatel_gps_driver
     gpgsv_msgs_.clear();
   }
 
+  void NovatelGps::GetGphdtMessages(std::vector<novatel_gps_msgs::GphdtPtr>& gphdt_messages)
+  {
+    gphdt_messages.resize(gphdt_msgs_.size());
+    std::copy(gphdt_msgs_.begin(), gphdt_msgs_.end(), gphdt_messages.begin());
+    gphdt_msgs_.clear();
+  }
+
   void NovatelGps::GetGprmcMessages(std::vector<novatel_gps_msgs::GprmcPtr>& gprmc_messages)
   {
     gprmc_messages.clear();
@@ -496,6 +527,13 @@ namespace novatel_gps_driver
     inspva_messages.clear();
     inspva_messages.insert(inspva_messages.end(), inspva_msgs_.begin(), inspva_msgs_.end());
     inspva_msgs_.clear();
+  }
+
+  void NovatelGps::GetInspvaxMessages(std::vector<novatel_gps_msgs::InspvaxPtr>& inspvax_messages)
+  {
+    inspvax_messages.clear();
+    inspvax_messages.insert(inspvax_messages.end(), inspvax_msgs_.begin(), inspvax_msgs_.end());
+    inspvax_msgs_.clear();
   }
 
   void NovatelGps::GetInsstdevMessages(std::vector<novatel_gps_msgs::InsstdevPtr>& insstdev_messages)
@@ -1016,6 +1054,13 @@ namespace novatel_gps_driver
         position_sync_buffer_.push_back(position);
         break;
       }
+      case BestxyzParser::MESSAGE_ID:
+      {
+        novatel_gps_msgs::NovatelXYZPtr xyz_position = bestxyz_parser_.ParseBinary(msg);
+        xyz_position->header.stamp = stamp;
+        novatel_xyz_positions_.push_back(xyz_position);
+        break;
+      }
       case BestutmParser::MESSAGE_ID:
       {
         novatel_gps_msgs::NovatelUtmPositionPtr utm_position = bestutm_parser_.ParseBinary(msg);
@@ -1028,6 +1073,20 @@ namespace novatel_gps_driver
         novatel_gps_msgs::NovatelVelocityPtr velocity = bestvel_parser_.ParseBinary(msg);
         velocity->header.stamp = stamp;
         novatel_velocities_.push_back(velocity);
+        break;
+      }
+      case Heading2Parser::MESSAGE_ID:
+      {
+        novatel_gps_msgs::NovatelHeading2Ptr heading = heading2_parser_.ParseBinary(msg);
+        heading->header.stamp = stamp;
+        heading2_msgs_.push_back(heading);
+        break;
+      }
+      case DualAntennaHeadingParser::MESSAGE_ID:
+      {
+        novatel_gps_msgs::NovatelDualAntennaHeadingPtr heading = dual_antenna_heading_parser_.ParseBinary(msg);
+        heading->header.stamp = stamp;
+        dual_antenna_heading_msgs_.push_back(heading);
         break;
       }
       case CorrImuDataParser::MESSAGE_ID:
@@ -1064,6 +1123,13 @@ namespace novatel_gps_driver
           inspva_queue_.pop();
         }
         GenerateImuMessages();
+        break;
+      }
+      case InspvaxParser::MESSAGE_ID:
+      {
+        novatel_gps_msgs::InspvaxPtr inspvax = inspvax_parser_.ParseBinary(msg);
+        inspvax->header.stamp = stamp;
+        inspvax_msgs_.push_back(inspvax);
         break;
       }
       case InsstdevParser::MESSAGE_ID:
@@ -1167,6 +1233,11 @@ namespace novatel_gps_driver
       novatel_gps_msgs::GpgsvPtr gpgsv = gpgsv_parser_.ParseAscii(sentence);
       gpgsv_msgs_.push_back(gpgsv);
     }
+    else if (sentence.id == GphdtParser::MESSAGE_NAME)
+    {
+      novatel_gps_msgs::GphdtPtr gphdt = gphdt_parser_.ParseAscii(sentence);
+      gphdt_msgs_.push_back(gphdt);
+    }
     else
     {
       ROS_DEBUG_STREAM("Unrecognized NMEA sentence " << sentence.id);
@@ -1185,7 +1256,13 @@ namespace novatel_gps_driver
       novatel_positions_.push_back(position);
       position_sync_buffer_.push_back(position);
     }
-    if (sentence.id == "BESTUTMA")
+    else if (sentence.id == "BESTXYZA")
+    {
+      novatel_gps_msgs::NovatelXYZPtr position = bestxyz_parser_.ParseAscii(sentence);
+      position->header.stamp = stamp;
+      novatel_xyz_positions_.push_back(position);
+    }
+    else if (sentence.id == "BESTUTMA")
     {
       novatel_gps_msgs::NovatelUtmPositionPtr utm_position = bestutm_parser_.ParseAscii(sentence);
       utm_position->header.stamp = stamp;
@@ -1196,6 +1273,18 @@ namespace novatel_gps_driver
       novatel_gps_msgs::NovatelVelocityPtr velocity = bestvel_parser_.ParseAscii(sentence);
       velocity->header.stamp = stamp;
       novatel_velocities_.push_back(velocity);
+    }
+    else if (sentence.id == "HEADING2A")
+    {
+      novatel_gps_msgs::NovatelHeading2Ptr heading = heading2_parser_.ParseAscii(sentence);
+      heading->header.stamp = stamp;
+      heading2_msgs_.push_back(heading);
+    }
+    else if (sentence.id == "DUALANTENNAHEADINGA")
+    {
+      novatel_gps_msgs::NovatelDualAntennaHeadingPtr heading = dual_antenna_heading_parser_.ParseAscii(sentence);
+      heading->header.stamp = stamp;
+      dual_antenna_heading_msgs_.push_back(heading);
     }
     else if (sentence.id == "CORRIMUDATAA")
     {
@@ -1229,6 +1318,12 @@ namespace novatel_gps_driver
         inspva_queue_.pop();
       }
       GenerateImuMessages();
+    }
+    else if (sentence.id == "INSPVAXA")
+    {
+      novatel_gps_msgs::InspvaxPtr inspvax = inspvax_parser_.ParseAscii(sentence);
+      inspvax->header.stamp = stamp;
+      inspvax_msgs_.push_back(inspvax);
     }
     else if (sentence.id == "INSSTDEVA")
     {
