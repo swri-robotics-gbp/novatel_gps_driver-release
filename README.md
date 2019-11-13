@@ -1,3 +1,28 @@
+## novatel_gps_driver (dashing) - 4.0.0-1
+
+The packages in the `novatel_gps_driver` repository were released into the `dashing` distro by running `/usr/bin/bloom-release -r dashing novatel_gps_driver` on `Wed, 13 Nov 2019 21:53:34 -0000`
+
+These packages were released:
+- `novatel_gps_driver`
+- `novatel_gps_msgs`
+
+Version of package(s) in repository `novatel_gps_driver`:
+
+- upstream repository: https://github.com/swri-robotics/novatel_gps_driver.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `4.0.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.0`
+- catkin_pkg version: `0.4.14`
+- rosdep version: `0.17.1`
+- rosdistro version: `0.7.5`
+- vcstools version: `0.1.42`
+
+
 ## novatel_gps_driver (melodic) - 3.9.0-1
 
 The packages in the `novatel_gps_driver` repository were released into the `melodic` distro by running `/usr/bin/bloom-release -r melodic novatel_gps_driver` on `Wed, 04 Sep 2019 22:10:24 -0000`
