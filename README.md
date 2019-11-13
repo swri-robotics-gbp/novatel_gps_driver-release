@@ -1,8 +1,8 @@
-NovAtel GPS Driver [![Build Status](https://travis-ci.org/swri-robotics/novatel_gps_driver.svg?branch=master)](https://travis-ci.org/swri-robotics/novatel_gps_driver)
+NovAtel GPS Driver [![Build Status](https://travis-ci.org/swri-robotics/novatel_gps_driver.svg?branch=dashing-devel)](https://travis-ci.org/swri-robotics/novatel_gps_driver)
 ==================
 
-1. Overview
------------
+Overview
+--------
 
 This is a C++ [ROS](http://www.ros.org/) driver for [NovAtel](https://www.novatel.com/) GPS / GNSS Receivers.  
 
@@ -21,55 +21,71 @@ Features:
 
 It has been tested primarily on NovAtel OEM628 receivers, but it has been used with
 various OEM4, OEM6, and OEM7 devices. Please let 
-[the maintainers](mailto:preed@swri.org,kkozak@swri.org) know of your success
+[the maintainers](mailto:preed@swri.org) know of your success
 or failure in using this with other devices so we can update this page appropriately.
 
-2. Usage
---------
+Usage
+-----
 
-The driver should function on ROS Kinetic and Melodic, and binary packages are available
+The driver should function on ROS 2 Dashing, and binary packages are available
 for both of them.  To install them, first install ROS, then just run:
 
 ```bash
-sudo apt-get install ros-${ROSDISTRO}-novatel-gps-driver
+sudo apt-get install ros-dashing-novatel-gps-driver
 ```
 
-If you'd like to build it from source using [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html):
+If you'd like to build it from source:
 
 ```bash
 mkdir -p novatel/src
-cd novatel
-catkin init
-catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cd src
+cd novatel/src
 git clone https://github.com/swri-robotics/novatel_gps_driver
 rosdep install . --from-paths -i
-catkin build
+cd ../..
+colcon build
 ```
 
-Then create a `.launch` file and configure it as desired:
+Then create a `.launch.py` file and configure it as desired:
 
-```xml
-<?xml version="1.0"?>
-<launch>
-  <node name="novatel"
-        pkg="nodelet" type="nodelet"
-        args="standalone novatel_gps_driver/novatel_gps_nodelet">
-    <rosparam>
-      connection_type: serial
-      device: /dev/ttyUSB0
-      frame_id: /gps
-    </rosparam>
-  </node>
-</launch>
+```python
+"""Launch an example driver that communicates using TCP"""
+
+from launch import LaunchDescription
+import launch_ros.actions
+
+
+def generate_launch_description():
+    container = launch_ros.actions.ComposableNodeContainer(
+        node_name='novatel_gps_container',
+        node_namespace='',
+        package='rclcpp_components',
+        node_executable='component_container',
+        composable_node_descriptions=[
+            launch_ros.descriptions.ComposableNode(
+                package='novatel_gps_driver',
+                node_plugin='novatel_gps_driver::NovatelGpsNode',
+                node_name='novatel_gps',
+                parameters=[{
+                    'connection_type': 'serial',
+                    'device': '/dev/ttyUSB0',
+                    'verbose': True,
+                    'publish_novatel_positions': True,
+                    'frame_id': '/gps'
+                }]
+            )
+        ],
+        output='screen'
+    )
+
+    return LaunchDescription([container])
 ```
 
 `gps_common/GPSFix` messages will always be published, but by default, other message 
 types are not.  See the config parameters for a list of which other message types can be
 enabled.
 
-3. Packages
------------
+Packages
+--------
 1. ### `novatel_gps_msgs`
 
     ROS messages that represent NovAtel message logs.  Each supported log
@@ -77,12 +93,12 @@ enabled.
     at http://docs.novatel.com/OEM7/Content/Logs/Log_Reference.htm .
 2. ### `novatel_gps_driver`
 
-    A C++ library with an accompanying ROS nodelet and node that can connect to 
+    A C++ library with an accompanying ROS node and node that can connect to 
     a NovAtel device over a serial, TCP, or UDP connection and translate NovAtel
     logs into ROS messages.
 
-4. Nodelets
------------
+Nodelets
+--------
 
 1. ### `novatel_gps_driver/novatel_gps_nodelet`
     1. **ROS Parameters**
@@ -106,9 +122,10 @@ enabled.
             - Default `0.01`
         - `imu_frame_id`: TF frame id to use in IMU messages.
             - Default: Empty
-        - `imu_rate`: Desired rate in Hz for IMU messages.
+        - `imu_rate`: Desired logging rate in Hz for IMU messages.
             - This is set as the rate for `CORRIMUDATA` logs.
             - Default: `100`
+        - `imu_sample_rate`: Sample rate of the connected IMU.  Normally this is automatically detected based on the IMU type.
         - `polling_period`: Desired period between GPS messages. 
             - This will be set as the period for `GPGGA`, `GPRMC`, `GPGSA`, `BESTPOS`, 
             and `BESTVEL` logs.
@@ -128,17 +145,17 @@ enabled.
             - Default: `false`
         - `publish_nmea_messages`: `true` to publish novatel_gps_msgs/Gpgga and novatel_gps_msgs/Gprmc messages.
             - Default: `false`
+        - `publish_novatel_dual_antenna_heading`: `true` to publish novatel_gps_msgs/NovatelDualAntennaHeading messages.
+            - Default: `false`
+        - `publish_novatel_heading2`: `true` to publish novatel_gps_msgs/Heading2 messages.
+            - Default: `false`
         - `publish_novatel_positions`: `true` to publish novatel_gps_msgs/NovatelPosition messages.
             - Default: `false`
         - `publish_novatel_utm_positions`: `true` to publish novatel_gps_msgs/NovatelUtmPosition messages.
             - Default: `false`
-        - `publish_novatel_xyz_positions`: `true` to publish novatel_gps_msgs/NovatelXYZ messages.
-            - Default: `false`
-        - `publish_novatel_heading2`: `true` to publish novatel_gps_msgs/NovatelHeading2 messages.
-            - Default: `false`
-        - `publish_novatel_dual_antenna_heading`: `true` to publish novatel_gps_msgs/NovatelDualAntennaHeading messages.
-            - Default: `false`
         - `publish_novatel_velocity`: `true` to publish novatel_gps_msgs/NovatelVelocity messages.
+            - Default: `false`
+        - `publish_novatel_xyz_positions`: `true` to publish novatel_gps_msgs/NovatelXYZ messages.
             - Default: `false`
         - `publish_range_messages`: `true` to publish novatel_gps_msgs/Range messages.
             - Default: `false`
@@ -153,6 +170,8 @@ enabled.
             - Default: `0.5`
         - `serial_baud`: Select the serial baud rate to be used in a serial connection.
             - Default: `115200`
+        - `spam_frame_to_ros_frame`: Translate the SPAN coordinate frame to a ROS coordinate frame using the VEHICLEBODYROTATION and APPLYVEHICLEBODYROTATION commands.
+            - Default: `false`
         - `use_binary_messages`: `true` to request binary NovAtel logs, `false` to request ASCII.
             - Binary logs are much more efficient and effectively required for IMU data,
             but ASCII logs are easier to parse for a human.
@@ -166,19 +185,19 @@ enabled.
         - `/bestpos` *(novatel_gps_msgs/NovatelPosition)*: [BESTPOS](http://docs.novatel.com/OEM7/Content/Logs/BESTPOS.htm) logs
         - `/bestutm` *(novatel_gps_msgs/NovatelUtmPosition)*: [BESTUTM](http://docs.novatel.com/OEM7/Content/Logs/BESTUTM.htm) logs
         - `/bestvel` *(novatel_gps_msgs/NovatelVelocity)*: [BESTVEL](http://docs.novatel.com/OEM7/Content/Logs/BESTVEL.htm) logs
-        - `/clocksteering` *(novatel_gps_msgs/ClockSteering)*: [CLOCKSTEERING](http://docs.novatel.com/OEM7/Content/Logs/CLOCKSTEERING.htm) logs
         - `/bestxyz` *(novatel_gps_msgs/NovatelXYZ)*: [BESTXYZ](http://docs.novatel.com/OEM7/Content/Logs/BESTXYZ.htm) logs
-        - `/heading2` *(novatel_gps_msgs/NovatelHeadin2)*: [HEADING2](http://docs.novatel.com/OEM7/Content/Logs/HEADING2.htm) logs
-        - `/dual_antenna_heading` *(novatel_gps_msgs/NovatelDualAntennaHeading)*: [DUALANTENNAHEADING](http://docs.novatel.com/OEM7/Content/Logs/DUALANTENNAHEADING.htm) logs
+        - `/clocksteering` *(novatel_gps_msgs/ClockSteering)*: [CLOCKSTEERING](http://docs.novatel.com/OEM7/Content/Logs/CLOCKSTEERING.htm) logs
         - `/corrimudata` *(novatel_gps_msgs/NovatelCorrectedImuData)*: [CORRIMUDATA](http://docs.novatel.com/OEM7/Content/SPAN_Logs/CORRIMUDATA.htm) logs
         - `/diagnostics` *(diagnostic_msgs/DiagnosticArray)*: ROS diagnostics
+        - `/dual_antenna_heading` *(novatel_gps_msgs/NovatelDualAntennaHeading)*: [DUALANTENNAHEADING](http://docs.novatel.com/OEM7/Content/Logs/DUALANTENNAHEADING.htm) logs
+        - `/fix` *([sensor_msgs/NavSatFix](https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/NavSatFix.html))*: GPSFix messages converted to NavSatFix messages
         - `/gpgga` *(novatel_gps_msgs/Gpgga)*: [GPGGA](http://docs.novatel.com/OEM7/Content/Logs/GPGGA.htm) logs
         - `/gpgsa` *(novatel_gps_msgs/Gpgsa)*: [GPGSA](http://docs.novatel.com/OEM7/Content/Logs/GPGSA.htm) logs
         - `/gpgsv` *(novatel_gps_msgs/Gpgsv)*: [GPGSV](http://docs.novatel.com/OEM7/Content/Logs/GPGSV.htm) logs
         - `/gprmc` *(novatel_gps_msgs/Gprmc)*: [GPRMC](http://docs.novatel.com/OEM7/Content/Logs/GPRMC.htm) logs
         - `/gps` *([gps_common/GPSFix](http://docs.ros.org/kinetic/api/gps_common/html/msg/GPSFix.html))*: Fixes produced by combining GPGGA, GPRMC, and BESTPOS messages together
             - **Note**:  GPSFix messages will always be published regardless of what other types are enabled.        
-        - `/fix` *([sensor_msgs/NavSatFix](https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/NavSatFix.html))*: GPSFix messages converted to NavSatFix messages
+        - `/heading2` *(novatel_gps_msgs/NovatelHeadin2)*: [HEADING2](http://docs.novatel.com/OEM7/Content/Logs/HEADING2.htm) logs
         - `/imu` *([sensor_msgs/Imu](http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html))*: CORRIMUDATA logs converted to Imu messages
         - `/inspva` *(novatel_gps_msgs/Inspva)*: [INSPVA](http://docs.novatel.com/OEM7/Content/SPAN_Logs/INSPVA.htm) logs
         - `/inspvax` *(novatel_gps_msgs/Inspvax)*: [INSPVAX](http://docs.novatel.com/OEM7/Content/SPAN_Logs/INSPVAX.htm) logs
@@ -188,8 +207,8 @@ enabled.
         - `/time` *(novatel_gps_msgs/Time)*: [TIME](http://docs.novatel.com/OEM7/Content/Logs/TIME.htm) logs
         - `/trackstat` *(novatel_gps_msgs/Trackstat)*: [TRACKSTAT](http://docs.novatel.com/OEM7/Content/Logs/TRACKSTAT.htm) logs
 
-5. Adding New Logs
-------------------
+Adding New Logs
+---------------
 
 Do you need support for a new log type?  Follow these steps:
 
@@ -197,6 +216,10 @@ Do you need support for a new log type?  Follow these steps:
 2. Add a new .msg file to the `novatel_gps_msgs` package.
 3. Add a new class in the `novatel_gps_driver` package that extends the `novatel_gps_driver::MessageParser` class that
 can parse the log and return the appropriate ROS message.
+    1. Note that most MessageParsers produce `UniquePtr`s to messages because this is more efficient for intraprocess
+    communications.  Some MessageParsers have to produce `SharedPtr`s because multiple references to their messages are
+    kept for synchronization or other purposes.  Choose the appropriate pointer type based on your needs and look at
+    other messages as examples.
 4. Modify the `novatel_gps_driver::NovatelGps` class:
     1. Add an instance of your parser, a buffer for storing parsed messages, and a method for retrieving them.
     2. Modify the `NovatelGps::ParseBinaryMessage`, `NovatelGps::ParseNovatelSentence`, 
