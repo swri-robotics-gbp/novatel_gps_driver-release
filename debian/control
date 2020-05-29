@@ -1,0 +1,12 @@
+Source: ros-eloquent-novatel-gps-driver
+Section: misc
+Priority: optional
+Maintainer: P. J. Reed <preed@swri.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, libpcap0.8-dev, ros-eloquent-ament-cmake, ros-eloquent-ament-cmake-gtest, ros-eloquent-ament-index-cpp, ros-eloquent-ament-lint-auto, ros-eloquent-diagnostic-msgs, ros-eloquent-diagnostic-updater, ros-eloquent-gps-msgs, ros-eloquent-nav-msgs, ros-eloquent-novatel-gps-msgs, ros-eloquent-rclcpp, ros-eloquent-rclcpp-components, ros-eloquent-sensor-msgs, ros-eloquent-std-msgs, ros-eloquent-swri-math-util, ros-eloquent-swri-roscpp, ros-eloquent-swri-serial-util, ros-eloquent-tf2, ros-eloquent-tf2-geometry-msgs, ros-eloquent-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-eloquent-novatel-gps-driver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, libpcap0.8-dev, ros-eloquent-diagnostic-msgs, ros-eloquent-diagnostic-updater, ros-eloquent-gps-msgs, ros-eloquent-nav-msgs, ros-eloquent-novatel-gps-msgs, ros-eloquent-rclcpp, ros-eloquent-rclcpp-components, ros-eloquent-sensor-msgs, ros-eloquent-std-msgs, ros-eloquent-swri-math-util, ros-eloquent-swri-roscpp, ros-eloquent-swri-serial-util, ros-eloquent-tf2, ros-eloquent-tf2-geometry-msgs, ros-eloquent-ros-workspace
+Description: Driver for NovAtel receivers
