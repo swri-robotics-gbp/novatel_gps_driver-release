@@ -1,0 +1,12 @@
+Source: ros-noetic-novatel-gps-msgs
+Section: misc
+Priority: optional
+Maintainer: P. J. Reed <preed@swri.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin, ros-noetic-message-generation, ros-noetic-std-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-noetic-novatel-gps-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-noetic-message-runtime, ros-noetic-std-msgs
+Description: Messages for proprietary (non-NMEA) sentences from Novatel GPS receivers.
