@@ -1,0 +1,12 @@
+Source: ros-rolling-novatel-gps-msgs
+Section: misc
+Priority: optional
+Maintainer: P. J. Reed <preed@swri.org>
+Build-Depends: debhelper (>= 9.0.0), ros-rolling-ament-cmake, ros-rolling-rosidl-default-generators, ros-rolling-std-msgs, ros-rolling-ros-workspace, ros-rolling-rosidl-typesupport-fastrtps-c, ros-rolling-rosidl-typesupport-fastrtps-cpp
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-rolling-novatel-gps-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-rolling-rosidl-default-runtime, ros-rolling-std-msgs, ros-rolling-ros-workspace
+Description: Messages for proprietary (non-NMEA) sentences from Novatel GPS receivers.
