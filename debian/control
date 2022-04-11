@@ -1,0 +1,12 @@
+Source: ros-galactic-novatel-gps-driver
+Section: misc
+Priority: optional
+Maintainer: P. J. Reed <preed@swri.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, libpcap0.8-dev, ros-galactic-ament-cmake, ros-galactic-ament-cmake-gtest, ros-galactic-ament-index-cpp, ros-galactic-ament-lint-auto, ros-galactic-diagnostic-msgs, ros-galactic-diagnostic-updater, ros-galactic-gps-msgs, ros-galactic-nav-msgs, ros-galactic-novatel-gps-msgs, ros-galactic-rclcpp, ros-galactic-rclcpp-components, ros-galactic-sensor-msgs, ros-galactic-std-msgs, ros-galactic-swri-math-util, ros-galactic-swri-roscpp, ros-galactic-swri-serial-util, ros-galactic-tf2, ros-galactic-tf2-geometry-msgs, ros-galactic-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-galactic-novatel-gps-driver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, libpcap0.8-dev, ros-galactic-diagnostic-msgs, ros-galactic-diagnostic-updater, ros-galactic-gps-msgs, ros-galactic-nav-msgs, ros-galactic-novatel-gps-msgs, ros-galactic-rclcpp, ros-galactic-rclcpp-components, ros-galactic-sensor-msgs, ros-galactic-std-msgs, ros-galactic-swri-math-util, ros-galactic-swri-roscpp, ros-galactic-swri-serial-util, ros-galactic-tf2, ros-galactic-tf2-geometry-msgs, ros-galactic-ros-workspace
+Description: Driver for NovAtel receivers
