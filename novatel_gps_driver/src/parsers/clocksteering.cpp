@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,8 @@
 //
 // *****************************************************************************
 
-#include <sstream>
-
 #include <novatel_gps_driver/parsers/clocksteering.h>
+#include <boost/make_shared.hpp>
 
 const std::string novatel_gps_driver::ClockSteeringParser::MESSAGE_NAME = "CLOCKSTEERING";
 
@@ -43,7 +42,7 @@ const std::string novatel_gps_driver::ClockSteeringParser::GetMessageName() cons
   return MESSAGE_NAME;
 }
 
-novatel_gps_driver::ClockSteeringParser::MessageType novatel_gps_driver::ClockSteeringParser::ParseAscii(const novatel_gps_driver::NovatelSentence& sentence) noexcept(false)
+novatel_gps_msgs::ClockSteeringPtr novatel_gps_driver::ClockSteeringParser::ParseAscii(const novatel_gps_driver::NovatelSentence& sentence) throw(ParseException)
 {
   const size_t MIN_LENGTH = 8;
   // Check that the message is at least as long as a a ClockSteering with no satellites
@@ -54,7 +53,7 @@ novatel_gps_driver::ClockSteeringParser::MessageType novatel_gps_driver::ClockSt
           << ", actual length = " << sentence.body.size();
     throw ParseException(error.str());
   }
-  auto msg = std::make_unique<novatel_gps_msgs::msg::ClockSteering>();
+  novatel_gps_msgs::ClockSteeringPtr msg = boost::make_shared<novatel_gps_msgs::ClockSteering>();
 
   msg->source = sentence.body[0];
   msg->steering_state = sentence.body[1];

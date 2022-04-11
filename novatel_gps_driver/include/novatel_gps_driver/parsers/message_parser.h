@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #include <novatel_gps_driver/parsers/parsing_utils.h>
 #include <novatel_gps_driver/parsers/parse_exception.h>
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace novatel_gps_driver
 {
@@ -54,17 +54,12 @@ namespace novatel_gps_driver
    * http://docs.novatel.com/OEM7/Content/Logs/Core_Logs.htm
    *
    * @tparam T The ROS message Ptr type that the parser should produce.
-   * UniquePtr types are preferred for efficient intraprocess communication,
-   * but SharedPtrs may be necessary if the driver needs multiple references
-   * to a message for synchronization or other purposes.
    */
   template<typename T>
   class MessageParser
   {
   public:
-    virtual ~MessageParser() = default;
-
-    typedef T MessageType;
+    virtual ~MessageParser() {}
 
     /**
      * @return The binary message ID. Should be 0 for messages that have no
@@ -84,7 +79,7 @@ namespace novatel_gps_driver
      * @param[in] bin_msg The message to convert.
      * @return A valid ROS message pointer.
      */
-    virtual T ParseBinary(const BinaryMessage& bin_msg) noexcept(false)
+    virtual T ParseBinary(const BinaryMessage& bin_msg) throw(ParseException)
     {
       throw ParseException("ParseBinary not implemented.");
     };
@@ -97,7 +92,7 @@ namespace novatel_gps_driver
      * @param[in] bin_msg The message to convert.
      * @return A valid ROS message pointer.
      */
-    virtual T ParseAscii(const NovatelSentence& sentence) noexcept(false)
+    virtual T ParseAscii(const NovatelSentence& sentence) throw(ParseException)
     {
       throw ParseException("ParseAscii not implemented.");
     };
@@ -110,7 +105,7 @@ namespace novatel_gps_driver
      * @param[in] bin_msg The message to convert.
      * @return A valid ROS message pointer.
      */
-    virtual T ParseAscii(const NmeaSentence& sentence) noexcept(false)
+    virtual T ParseAscii(const NmeaSentence& sentence) throw(ParseException)
     {
       throw ParseException("ParseAscii not implemented.");
     };

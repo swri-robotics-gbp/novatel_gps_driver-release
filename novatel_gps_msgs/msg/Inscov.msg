@@ -1,6 +1,6 @@
 # INS Covariance Matrices
 
-std_msgs/Header header
+Header header
 
 NovatelMessageHeader novatel_msg_header
 

@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
 //
 // *****************************************************************************
 
-#include <sstream>
-
 #include <novatel_gps_driver/parsers/gprmc.h>
-
-#include <boost/lexical_cast.hpp>
+#include <boost/make_shared.hpp>
+#include <swri_string_util/string_util.h>
 
 const std::string novatel_gps_driver::GprmcParser::MESSAGE_NAME = "GPRMC";
 
@@ -45,8 +43,7 @@ const std::string novatel_gps_driver::GprmcParser::GetMessageName() const
   return MESSAGE_NAME;
 }
 
-novatel_gps_driver::GprmcParser::MessageType novatel_gps_driver::GprmcParser::ParseAscii(
-    const novatel_gps_driver::NmeaSentence& sentence) noexcept(false)
+novatel_gps_msgs::GprmcPtr novatel_gps_driver::GprmcParser::ParseAscii(const novatel_gps_driver::NmeaSentence& sentence) throw(ParseException)
 {
   // Check the length first; should be 13 elements long for OEM6 & 7,
   // but only 12 elements for OEM4.
@@ -65,7 +62,7 @@ novatel_gps_driver::GprmcParser::MessageType novatel_gps_driver::GprmcParser::Pa
   }
 
   bool success = true;
-  auto msg = std::make_unique<novatel_gps_msgs::msg::Gprmc>();
+  novatel_gps_msgs::GprmcPtr msg = boost::make_shared<novatel_gps_msgs::Gprmc>();
   msg->message_id = sentence.body[0];
 
   if (sentence.body[1].empty() || sentence.body[1] == "0")
@@ -74,11 +71,12 @@ novatel_gps_driver::GprmcParser::MessageType novatel_gps_driver::GprmcParser::Pa
   }
   else
   {
-    try
+    double utc_float;
+    if (swri_string_util::ToDouble(sentence.body[1], utc_float))
     {
-      msg->utc_seconds = boost::lexical_cast<double>(sentence.body[1]);
+      msg->utc_seconds = UtcFloatToSeconds(utc_float);
     }
-    catch (boost::bad_lexical_cast& e)
+    else
     {
       throw ParseException("Error parsing UTC seconds in GPRMC log.");
     }

@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <sstream>
-
 #include <novatel_gps_driver/parsers/header.h>
+
+#include <ros/ros.h>
 
 uint32_t novatel_gps_driver::HeaderParser::GetMessageId() const
 {
@@ -41,12 +41,12 @@ const std::string novatel_gps_driver::HeaderParser::GetMessageName() const
   return "HEADER";
 }
 
-novatel_gps_driver::HeaderParser::MessageType novatel_gps_driver::HeaderParser::ParseBinary(
-    const novatel_gps_driver::BinaryMessage& bin_msg) noexcept(false)
+novatel_gps_msgs::NovatelMessageHeader novatel_gps_driver::HeaderParser::ParseBinary(
+    const novatel_gps_driver::BinaryMessage& bin_msg) throw(ParseException)
 {
   // No point in checking whether the port identifier is valid here, because
   // the variable's range is 0-255 and this array has 256 values in it.
-  novatel_gps_msgs::msg::NovatelMessageHeader msg;
+  novatel_gps_msgs::NovatelMessageHeader msg;
   msg.port = PORT_IDENTIFIERS[bin_msg.header_.port_address_];
   msg.sequence_num = bin_msg.header_.sequence_;
   msg.percent_idle_time = bin_msg.header_.idle_time_;
@@ -100,8 +100,8 @@ novatel_gps_driver::HeaderParser::MessageType novatel_gps_driver::HeaderParser::
   return msg;
 }
 
-novatel_gps_driver::HeaderParser::MessageType novatel_gps_driver::HeaderParser::ParseAscii(
-    const novatel_gps_driver::NovatelSentence& sentence) noexcept(false)
+novatel_gps_msgs::NovatelMessageHeader novatel_gps_driver::HeaderParser::ParseAscii(
+    const novatel_gps_driver::NovatelSentence& sentence) throw(ParseException)
 {
   if (sentence.header.size() != NOVATEL_MESSAGE_HEADER_LENGTH)
   {
@@ -114,7 +114,7 @@ novatel_gps_driver::HeaderParser::MessageType novatel_gps_driver::HeaderParser::
 
   bool valid = true;
 
-  novatel_gps_msgs::msg::NovatelMessageHeader msg;
+  novatel_gps_msgs::NovatelMessageHeader msg;
   msg.message_name = sentence.header[0];
   msg.port = sentence.header[1];
   valid = valid && ParseUInt32(sentence.header[2], msg.sequence_num);

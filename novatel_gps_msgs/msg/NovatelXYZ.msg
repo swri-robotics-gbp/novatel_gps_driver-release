@@ -1,5 +1,5 @@
 # Parsed Best Position in the WGS-84 ECEF frame from Novatel receiver
-std_msgs/Header header
+Header header
 
 NovatelMessageHeader novatel_msg_header
 

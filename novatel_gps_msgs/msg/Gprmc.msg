@@ -1,5 +1,5 @@
 # Message from GPRMC NMEA String
-std_msgs/Header header
+Header header
 
 string message_id
 

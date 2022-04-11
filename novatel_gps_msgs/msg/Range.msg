@@ -1,6 +1,6 @@
 #Satellite Range information from Novatel OEM6 receiver
 
-std_msgs/Header header
+Header header
 
 NovatelMessageHeader novatel_msg_header
 

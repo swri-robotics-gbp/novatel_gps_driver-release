@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,6 @@
 //
 // *****************************************************************************
 
-#include <sstream>
-
 #include <novatel_gps_driver/parsers/time.h>
 #include <boost/make_shared.hpp>
 
@@ -44,7 +42,7 @@ const std::string novatel_gps_driver::TimeParser::GetMessageName() const
   return MESSAGE_NAME;
 }
 
-novatel_gps_driver::TimeParser::MessageType novatel_gps_driver::TimeParser::ParseBinary(const novatel_gps_driver::BinaryMessage& msg) noexcept(false)
+novatel_gps_msgs::TimePtr novatel_gps_driver::TimeParser::ParseBinary(const novatel_gps_driver::BinaryMessage& msg) throw(ParseException)
 {
   if (msg.data_.size() != BINARY_LENGTH)
   {
@@ -53,7 +51,7 @@ novatel_gps_driver::TimeParser::MessageType novatel_gps_driver::TimeParser::Pars
     throw ParseException(error.str());
   }
 
-  novatel_gps_msgs::msg::Time::UniquePtr ros_msg = std::make_unique<novatel_gps_msgs::msg::Time>();
+  novatel_gps_msgs::TimePtr ros_msg = boost::make_shared<novatel_gps_msgs::Time>();
 
   uint32_t clock_status = ParseUInt32(&msg.data_[0]);
   switch (clock_status)
@@ -109,10 +107,10 @@ novatel_gps_driver::TimeParser::MessageType novatel_gps_driver::TimeParser::Pars
   return ros_msg;
 }
 
-novatel_gps_driver::TimeParser::MessageType
-novatel_gps_driver::TimeParser::ParseAscii(const novatel_gps_driver::NovatelSentence& sentence) noexcept(false)
+novatel_gps_msgs::TimePtr
+novatel_gps_driver::TimeParser::ParseAscii(const novatel_gps_driver::NovatelSentence& sentence) throw(ParseException)
 {
-  novatel_gps_msgs::msg::Time::UniquePtr msg = std::make_unique<novatel_gps_msgs::msg::Time>();
+  novatel_gps_msgs::TimePtr msg = boost::make_shared<novatel_gps_msgs::Time>();
   if (sentence.body.size() != ASCII_FIELD)
   {
     std::stringstream error;

@@ -1,6 +1,6 @@
 # INS Position, Velocity, and Attitude
 
-std_msgs/Header header
+Header header
 
 NovatelMessageHeader novatel_msg_header
 

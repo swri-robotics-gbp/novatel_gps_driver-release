@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,27 +33,20 @@
 #include <novatel_gps_driver/parsers/parsing_utils.h>
 #include <novatel_gps_driver/parsers/message_parser.h>
 
-#include <novatel_gps_msgs/msg/novatel_message_header.hpp>
+#include <novatel_gps_msgs/NovatelMessageHeader.h>
 
 namespace novatel_gps_driver
 {
-  /**
-   * Parses the header in a typical NovAtel message.
-   *
-   * Note that this parser is actually a little different from the others; it is used by the other
-   * parsers to parse headers in their messages, and it does not return a Ptr type because the headers
-   * in the ROS message classes are assigned by value.
-   */
-  class HeaderParser : public MessageParser<novatel_gps_msgs::msg::NovatelMessageHeader>
+  class HeaderParser : public MessageParser<novatel_gps_msgs::NovatelMessageHeader>
   {
   public:
     uint32_t GetMessageId() const override;
 
     const std::string GetMessageName() const override;
 
-    MessageType ParseBinary(const BinaryMessage& bin_msg) noexcept(false) override;
+    novatel_gps_msgs::NovatelMessageHeader ParseBinary(const BinaryMessage& bin_msg) throw(ParseException) override;
 
-    MessageType ParseAscii(const NovatelSentence& sentence) noexcept(false) override;
+    novatel_gps_msgs::NovatelMessageHeader ParseAscii(const NovatelSentence& sentence) throw(ParseException) override;
 
     static constexpr uint32_t BINARY_HEADER_LENGTH = 28;
   };

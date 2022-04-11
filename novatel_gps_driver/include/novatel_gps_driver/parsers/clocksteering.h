@@ -31,18 +31,18 @@
 #define NOVATEL_GPS_DRIVER_CLOCKSTEERING_H
 
 #include <novatel_gps_driver/parsers/message_parser.h>
-#include <novatel_gps_msgs/msg/clock_steering.hpp>
+#include <novatel_gps_msgs/ClockSteering.h>
 
 namespace novatel_gps_driver
 {
-  class ClockSteeringParser : public MessageParser<novatel_gps_msgs::msg::ClockSteering::UniquePtr>
+  class ClockSteeringParser : MessageParser<novatel_gps_msgs::ClockSteeringPtr>
   {
   public:
     uint32_t GetMessageId() const override;
 
     const std::string GetMessageName() const override;
 
-    MessageType ParseAscii(const NovatelSentence& sentence) noexcept(false) override;
+    novatel_gps_msgs::ClockSteeringPtr ParseAscii(const NovatelSentence& sentence) throw(ParseException) override;
 
     static const std::string MESSAGE_NAME;
   };

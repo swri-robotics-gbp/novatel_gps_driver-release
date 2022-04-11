@@ -1,5 +1,5 @@
 # Parsed Heading East of North from Novatel receiver. Only ALIGN capable recievers can publish this
-std_msgs/Header header
+Header header
 
 NovatelMessageHeader novatel_msg_header
 

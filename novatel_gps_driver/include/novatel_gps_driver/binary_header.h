@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #ifndef NOVATEL_GPS_DRIVER_BINARY_HEADER_H
 #define NOVATEL_GPS_DRIVER_BINARY_HEADER_H
 
-#include <cstdint>
+#include <stdint.h>
 
 #include <novatel_gps_driver/parsers/parsing_utils.h>
 
@@ -44,20 +44,7 @@ namespace novatel_gps_driver
     BinaryHeader() :
         sync0_(0xAA),
         sync1_(0x44),
-        sync2_(0x12),
-        header_length_(0),
-        message_id_(0),
-        message_type_(0),
-        port_address_(0),
-        message_length_(0),
-        sequence_(0),
-        idle_time_(0),
-        time_status_(0),
-        week_(0),
-        gps_ms_(0),
-        receiver_status_(0),
-        reserved_(0),
-        receiver_sw_version_(0)
+        sync2_(0x12)
     {}
 
     uint8_t sync0_;
