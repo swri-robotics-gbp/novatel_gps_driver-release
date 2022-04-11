@@ -1,3 +1,28 @@
+## novatel-gps-driver (noetic) - 3.9.0-1
+
+The packages in the `novatel-gps-driver` repository were released into the `noetic` distro by running `/usr/bin/bloom-release --edit --rosdistro noetic --track noetic novatel-gps-driver` on `Mon, 11 Apr 2022 19:58:46 -0000`
+
+These packages were released:
+- `novatel_gps_driver`
+- `novatel_gps_msgs`
+
+Version of package(s) in repository `novatel-gps-driver`:
+
+- upstream repository: https://github.com/swri-robotics/novatel_gps_driver.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `3.9.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.10.7`
+- catkin_pkg version: `0.4.24`
+- rosdep version: `0.21.0`
+- rosdistro version: `0.8.3`
+- vcstools version: `0.1.42`
+
+
 ## novatel_gps_driver (foxy) - 4.1.0-1
 
 The packages in the `novatel_gps_driver` repository were released into the `foxy` distro by running `/usr/bin/bloom-release -r foxy novatel_gps_driver` on `Tue, 06 Oct 2020 21:14:22 -0000`
