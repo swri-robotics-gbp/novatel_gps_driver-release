@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,9 @@
 //
 // *****************************************************************************
 
+#include <sstream>
+
 #include <novatel_gps_driver/parsers/gpgsv.h>
-#include <boost/make_shared.hpp>
 
 const std::string novatel_gps_driver::GpgsvParser::MESSAGE_NAME = "GPGSV";
 
@@ -42,7 +43,8 @@ const std::string novatel_gps_driver::GpgsvParser::GetMessageName() const
   return MESSAGE_NAME;
 }
 
-novatel_gps_msgs::GpgsvPtr novatel_gps_driver::GpgsvParser::ParseAscii(const novatel_gps_driver::NmeaSentence& sentence) throw(ParseException)
+novatel_gps_driver::GpgsvParser::MessageType novatel_gps_driver::GpgsvParser::ParseAscii(
+    const novatel_gps_driver::NmeaSentence& sentence) noexcept(false)
 {
   const size_t MIN_LENGTH = 4;
   // Check that the message is at least as long as a a GPGSV with no satellites
@@ -53,7 +55,7 @@ novatel_gps_msgs::GpgsvPtr novatel_gps_driver::GpgsvParser::ParseAscii(const nov
           << ", actual length = " << sentence.body.size();
     throw ParseException(error.str());
   }
-  novatel_gps_msgs::GpgsvPtr msg = boost::make_shared<novatel_gps_msgs::Gpgsv>();
+  auto msg = std::make_unique<novatel_gps_msgs::msg::Gpgsv>();
   msg->message_id = sentence.body[0];
   if (!ParseUInt8(sentence.body[1], msg->n_msgs))
   {
@@ -88,12 +90,14 @@ novatel_gps_msgs::GpgsvPtr novatel_gps_driver::GpgsvParser::ParseAscii(const nov
   {
     n_sats_in_sentence = msg->n_satellites % static_cast<uint8_t>(4);
   }
-  if (n_sats_in_sentence == 0)
-  {
-    n_sats_in_sentence = 4;
-  }
   // Check that the sentence is the right length for the number of satellites
   size_t expected_length = MIN_LENGTH + 4 * n_sats_in_sentence;
+  if (n_sats_in_sentence == 0)
+  {
+    // Even if the number of sats is 0, the message will still have enough
+    // blank fields for 1 satellite.
+    expected_length += 4;
+  }
   if (sentence.body.size() != expected_length && sentence.body.size() != expected_length -1)
   {
     std::stringstream ss;

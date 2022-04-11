@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,23 +30,23 @@
 #ifndef NOVATEL_GPS_DRIVER_DUAL_ANTENNA_HEADING_H
 #define NOVATEL_GPS_DRIVER_DUAL_ANTENNA_HEADING_H
 
-#include <novatel_gps_msgs/NovatelDualAntennaHeading.h>
+#include <novatel_gps_msgs/msg/novatel_dual_antenna_heading.hpp>
 
 #include <novatel_gps_driver/parsers/parsing_utils.h>
 #include <novatel_gps_driver/parsers/message_parser.h>
 
 namespace novatel_gps_driver
 {
-  class DualAntennaHeadingParser : public MessageParser<novatel_gps_msgs::NovatelDualAntennaHeadingPtr>
+  class DualAntennaHeadingParser : public MessageParser<novatel_gps_msgs::msg::NovatelDualAntennaHeading::UniquePtr>
   {
   public:
     uint32_t GetMessageId() const override;
 
     const std::string GetMessageName() const override;
 
-    novatel_gps_msgs::NovatelDualAntennaHeadingPtr ParseBinary(const BinaryMessage& bin_msg) throw(ParseException) override;
+    MessageType ParseBinary(const BinaryMessage& bin_msg) noexcept(false) override;
 
-    novatel_gps_msgs::NovatelDualAntennaHeadingPtr ParseAscii(const NovatelSentence& sentence) throw(ParseException) override;
+    MessageType ParseAscii(const NovatelSentence& sentence) noexcept(false) override;
 
     static constexpr uint16_t MESSAGE_ID = 2042;
     static constexpr size_t BINARY_LENGTH = 44;
@@ -61,7 +61,7 @@ namespace novatel_gps_driver
      * @param[in] source_mask The byte to parse
      * @return NovatelDualAntennaHeading.solution_source enum value
      */
-    uint8_t SolutionSourceToMsgEnum(uint8_t source_mask) throw(ParseException);
+    uint8_t SolutionSourceToMsgEnum(uint8_t source_mask) noexcept(false);
   };
 }
 

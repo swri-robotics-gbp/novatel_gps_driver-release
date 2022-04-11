@@ -2,6 +2,36 @@
 Changelog for package novatel_oem628
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.1.0 (2020-10-06)
+------------------
+* Add param to disable invalid GPSFixes, replace GPRMC with BESTVEL (ROS2) (`#94 <https://github.com/swri-robotics/novatel_gps_driver/issues/94>`_)
+* Use rclcpp::WallRate to sleep instead of boost (ROS2) (`#86 <https://github.com/swri-robotics/novatel_gps_driver/issues/86>`_)
+* Refactor GPSFix generation (ROS2) (`#73 <https://github.com/swri-robotics/novatel_gps_driver/issues/73>`_)
+* Contributors: P. J. Reed
+
+4.0.3 (2020-03-06)
+------------------
+* Handle GPGSV log with 0 satellites correctly (`#77 <https://github.com/pjreed/novatel_gps_driver/issues/77>`_)
+* Fill out error measurements in GPSFix messages (`#71 <https://github.com/pjreed/novatel_gps_driver/issues/71>`_)
+* Fix covariance in GPSFix messages (`#69 <https://github.com/pjreed/novatel_gps_driver/issues/69>`_)
+* Contributors: P. J. Reed
+
+4.0.2 (2019-11-18)
+------------------
+* Add dependency on tf2_geometry_msgs (`#67 <https://github.com/swri-robotics/novatel_gps_driver/issues/67>`_)
+* Contributors: P. J. Reed
+
+4.0.1 (2019-11-15)
+------------------
+* Add missing dependencies (`#66 <https://github.com/swri-robotics/novatel_gps_driver/issues/66>`_)
+* Add epson g370 (`#63 <https://github.com/swri-robotics/novatel_gps_driver/issues/63>`_)
+* Contributors: P. J. Reed, icolwell-as
+
+4.0.0 (2019-11-13)
+------------------
+* ROS2 Dashing support (`#61 <https://github.com/pjreed/novatel_gps_driver/issues/61>`_)
+* Contributors: P. J. Reed
+
 3.9.0 (2019-09-04)
 ------------------
 * Use GPGGA quality to set GPSFix status (`#55 <https://github.com/swri-robotics/novatel_gps_driver/issues/55>`_)
